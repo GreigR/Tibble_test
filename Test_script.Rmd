@@ -1,0 +1,72 @@
+---
+title: "Tibble time test"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+
+```{r}
+#load the libraries
+library(tidyverse)
+library(lubridate)
+library(tibbletime)
+```
+
+```{r}
+#load the data
+
+Test_data <- read_csv("/home/greig/R-projects/Tibbletime/Test_data.csv")
+
+glimpse(Test_data)
+```
+
+```{r}
+#Transform the data
+
+Test_data <- Test_data %>% 
+  mutate(
+    Date_year = year(Date_no_time),
+    Date_week = week(Date_no_time)
+  )
+
+glimpse(Test_data)
+```
+
+```{r}
+#Lubridate series
+
+Result_lubridate <- Test_data %>% 
+  group_by(Date_year, Date_week) %>% 
+  summarise(Count = n())
+
+glimpse(Result_lubridate)
+```
+
+```{r}
+#Tibble time series
+
+Tibble_data <- as_tbl_time(Test_data, index = Date_no_time)
+
+Result_tibble <- Tibble_data %>% 
+  time_summarise(
+    period = "weekly",
+    Count = n()
+  )
+
+glimpse(Result_tibble)
+```
+
+```{r}
+#Tibble time series with time
+
+Tibble_data2 <- as_tbl_time(Test_data, index = Date_with_time)
+
+Result_tibble2 <- Tibble_data2 %>% 
+  time_summarise(
+    period = "weekly",
+    Count = n()
+  )
+
+glimpse(Result_tibble2)
+```
+
